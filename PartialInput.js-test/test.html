@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta name="author" content="Yvonne P.">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+        <link rel="stylesheet" type="text/css" href="PartialInput.css">
+        <script type="text/javascript" src="../PartialInput.js"></script>
+        <style type="text/css">
+
+body {
+    font-size: 20px;
+    margin: 1em;
+}
+
+* {
+    font-family: verdana;
+}
+
+:root {
+
+    --partial-border-width:                 0.05em;
+
+    --partial-field-border-radius:          0.2em;
+    --partial-field-spacing:                0.5em;
+
+    --partial-sub-border-radius:            0.1em;
+    --partial-sub-border-radius-firstlast:  0.2em;
+    --partial-sub-padding:                  0.5em;
+    --partial-sub-padding-firstlast:        0.5em;
+    --partial-sub-margin:                   0.1em;
+
+    --partial-multi-padding:                0.2em;
+
+    --partial-multi-border-radius:  calc(var(--partial-multi-padding) + var(--partial-sub-border-radius-firstlast));
+    --partial-single-padding:       calc(var(--partial-sub-padding) + var(--partial-border-width) + var(--partial-multi-padding));
+}
+
+.partialinput {
+    font-size: 0.8em;
+}
+
+.partialinput {
+    background:     #ffffff;
+    border-color:   #cccccc;
+}
+.partialinput .multi-item {
+    background:     #f3ebf7;
+    border-color:   #d0afe3;
+}
+.partialinput .sub-item {
+    background:     #edf7ed;
+    border-color:   #9fd69f;
+}
+.partialinput .single-item {
+    background:     #f3ebf7;
+    border-color:   #d0afe3;
+}
+.partialinput .input-field {
+    background:     #ffffff;
+    border-color:   #aaaaaa;
+}
+
+#previewInfo {
+    font-style: italic;
+    font-size: 0.8em;
+    color: #999999;
+}
+
+        </style>
+
+
+    </head>
+    <body>
+
+
+        <div class="partialinput" id="testinput"></div>
+
+        <input type="button" id="testSentenceButton", value="Sentence test">
+        <input type="button" id="testSyllablesButton", value="Syllables test">
+        <input type="button" id="testEmailsButton", value="Emails test">
+
+        <input type="button" id="submitButton", value="Submit"> <span id="previewInfo"></span>
+        <script type="text/javascript">
+
+const PI_DELIM_ITEMS        = PartialInput.DELIM_ITEMS;
+const PI_DELIM_SUBITEMS     = PartialInput.DELIM_SUBITEMS;
+const PI_INSERT_DELIM       = PartialInput.INSERT_DELIM;
+const PI_INSERT_DELIM_DUP   = PartialInput.INSERT_DELIM_DUP
+
+const PI_HARD_INSERT        = PartialInput.HARD_INSERT;
+const PI_HARD_INSERT_DUP    = PartialInput.HARD_INSERT_DUP;
+const PI_SOFT_INSERT        = PartialInput.SOFT_INSERT;
+const PI_SOFT_INSERT_DUP    = PartialInput.SOFT_INSERT_DUP
+
+let myPI = PartialInput.fromSelector("#testinput");
+
+function getFullData(includeTemp, includeEmptyTemp) {
+    let data = myPI.data();
+    if (includeTemp) {
+        let temp = myPI.temp();
+        if (temp.length || includeEmptyTemp) {
+            data.push(temp);
+        }
+    }
+    return data;
+}
+
+myPI.onchange = () => {
+    let info = getFullData(true).reduce((acc, cur) => {
+        if (Array.isArray(cur)) {
+            acc.multi += 1;
+            acc.sub += cur.length;
+        } else {
+            acc.single += 1;
+        }
+        return acc;
+    }, {
+        "multi": 0,
+        "sub": 0,
+        "single": 0
+    });
+    document.querySelector("#previewInfo").innerHTML = `multi: ${info.multi}, sub: ${info.sub}, single: ${info.single}`;
+};
+
+document.querySelector("#submitButton").onclick = (event) => {
+    alert(JSON.stringify(getFullData(true), null, 4));
+};
+
+
+
+
+function testSentence() {
+    myPI.splitItems = true;
+    myPI.splitSubItems = true;
+    myPI.addDelimiters = true;
+    myPI.delimiters = {
+        ".": PI_INSERT_DELIM,
+        "!": PI_INSERT_DELIM,
+        "?": PI_INSERT_DELIM,
+        "¿": PI_INSERT_DELIM,
+        ",": PI_INSERT_DELIM,
+        " ": PI_DELIM_SUBITEMS,
+    };
+    myPI.onenter = myPI.finishItem;
+}
+
+function testSyllables() {
+    myPI.splitItems = true;
+    myPI.splitSubItems = true;
+    myPI.addDelimiters = true;
+    myPI.delimiters = {
+        " ": PI_DELIM_ITEMS,
+        ",": PI_DELIM_SUBITEMS,
+        "\u3002": PI_INSERT_DELIM, // jap point
+        "\uFF61": PI_INSERT_DELIM, // jap point (half width)
+    };
+    myPI.onenter = myPI.finishItem;
+}
+
+function testEmails() {
+    myPI.splitItems = true;
+    myPI.splitSubItems = false;
+    myPI.addDelimiters = false;
+    myPI.delimiters = {
+        ",": PI_DELIM_ITEMS,
+        " ": PI_DELIM_ITEMS,
+    };
+    myPI.onenter = myPI.finishItem;
+}
+
+testEmails();
+
+document.querySelector("#testSentenceButton").onclick = (event) => {
+    myPI.data([]);
+    myPI.temp([]);
+    myPI.onchange();
+    testSentence();
+    prompt("Insert following:", "¿Cómo estás? Me gustaría una cerveza.");
+};
+
+document.querySelector("#testSyllablesButton").onclick = (event) => {
+    myPI.data([]);
+    myPI.temp([]);
+    myPI.onchange();
+    testSyllables();
+    prompt("Insert following:", "a,ri,ga,to go,za,i,ma,zu。 あ,り,が,と,う ご,ざ,い,ま,す。");
+};
+
+document.querySelector("#testEmailsButton").onclick = (event) => {
+    myPI.data([]);
+    myPI.temp([]);
+    myPI.onchange();
+    testEmails();
+    prompt("Insert following:", "mail@test.com, contact@server.com, test@testing.com,");
+};
+
+
+/*
+        let delimiters = {
+            "^^": PI_INSERT_DELIM,   // space
+
+            "\u0020": PI_DELIM_ITEMS,   // space
+            "\u0009": PI_DELIM_ITEMS,   // tab
+
+            "\u002C": PI_DELIM_SUBITEMS | PI_INSERT_DELIM, // comma
+            "\u3001": PI_DELIM_ITEMS | PI_INSERT_DELIM, // jap comma
+            "\uFF64": PI_DELIM_ITEMS | PI_INSERT_DELIM, // jap comma (half width)
+
+            "\u0021": PI_DELIM_ITEMS | PI_INSERT_DELIM, // exclamation mark
+            "\u003F": PI_DELIM_ITEMS | PI_INSERT_DELIM, // question mark
+            "\u00BF": PI_DELIM_ITEMS | PI_INSERT_DELIM, // question mark inverted (spanish)
+
+            "\u002E": PI_DELIM_ITEMS | PI_INSERT_DELIM, // point
+            "\u3002": PI_DELIM_ITEMS | PI_INSERT_DELIM, // jap point
+            "\uFF61": PI_DELIM_ITEMS | PI_INSERT_DELIM, // jap point (half width)
+        };
+*/
+
+        </script>
+
+
+
+    </body>
+</html>

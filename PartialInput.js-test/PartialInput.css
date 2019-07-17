@@ -1,0 +1,83 @@
+
+.partialinput {
+    border-radius:              var(--partial-field-border-radius);
+    padding:                    var(--partial-field-spacing);
+    padding-bottom:             0;
+}
+
+.partialinput .multi-item {
+    padding:                    var(--partial-multi-padding);
+    border-radius:              var(--partial-multi-border-radius);
+}
+
+.partialinput .sub-item {
+    margin-right:               var(--partial-sub-margin);
+    border-radius:              var(--partial-sub-border-radius);
+    padding:                    var(--partial-sub-padding);
+}
+.partialinput .sub-item:last-child {
+    margin-right:               0;
+}
+
+.partialinput .input-field {
+    border-radius:              var(--partial-sub-border-radius);
+}
+
+.partialinput .sub-item:first-child,
+.partialinput .input-container:first-child input {
+    border-top-left-radius:     var(--partial-sub-border-radius-firstlast);
+    border-bottom-left-radius:  var(--partial-sub-border-radius-firstlast);
+    padding-left:               var(--partial-sub-padding-firstlast);
+}
+.partialinput .sub-item:last-child,
+.partialinput .input-container:last-child input {
+    border-top-right-radius:    var(--partial-sub-border-radius-firstlast);
+    border-bottom-right-radius: var(--partial-sub-border-radius-firstlast);
+    padding-right:              var(--partial-sub-padding-firstlast);
+}
+
+
+.partialinput .single-item {
+    padding:                    var(--partial-single-padding);
+    white-space:                pre;
+}
+
+.partialinput .multi-item,
+.partialinput .single-item {
+    margin-bottom:              var(--partial-field-spacing);
+    margin-right:               var(--partial-field-spacing);
+}
+
+.partialinput .single-item {
+    border-radius:              var(--partial-multi-border-radius);
+}
+
+.partialinput .multi-item,
+.partialinput .sub-item,
+.partialinput .single-item {
+    display:                    inline-block;
+    float:                      left;
+    line-height:                1em;
+}
+
+.partialinput,
+.partialinput .multi-item,
+.partialinput .sub-item,
+.partialinput .single-item,
+.partialinput .input-field {
+    border-width:               var(--partial-border-width);
+    border-style:               solid;
+    overflow:                   hidden;
+}
+
+.partialinput .input-container {
+    display:                    inline-block;
+}
+.partialinput .input-field {
+    -webkit-tap-highlight-color: transparent;
+    padding:                    var(--partial-sub-padding);
+    outline:                    none;
+    font-size:                  1em;
+    line-height:                1em;
+    height:                     1em;
+}
