@@ -1,2 +1,2 @@
 # PartialInput.js
-Smart input for separate emaily, splitting syllables and much more
+Smart input for emails, splitting syllables and much more
